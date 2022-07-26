@@ -10,7 +10,7 @@ pipeline {
     }
     stage('SonarQube Analysis') {
       steps {
-      	withSonarQubeEnv(installationName: 'do-sonarqube') {
+        withSonarQubeEnv(installationName: 'do-sonarqube') {
             withMaven(maven:'maven386') {
                 sh 'mvn sonar:sonar'
             }
@@ -20,26 +20,26 @@ pipeline {
     stage('SonarQube Gate') {
       steps {
         timeout(time: 2, unit: 'MINUTES') {
-           waitForQualityGate abortPipeline: true
+          waitForQualityGate abortPipeline: true
         }
       }
-    }    
-  }
-  post {
-      aborted {
-          emailext to: "deerao.in@gmail.com",
+      post {
+        aborted {
+          emailext to: 'deerao.in@gmail.com',
           subject: "ABORTED $JOB_NAME Build No: $BUILD_NUMBER ",
-          body: "Build result:" + currentBuild.result + " took " + currentBuild.duration + " milliseconds."
-      }
-      failure {
-          emailext to: "deerao.in@gmail.com",
+          body: 'Build result:' + currentBuild.result + ' took ' + currentBuild.duration + ' milliseconds.'
+        }
+        failure {
+          emailext to: 'deerao.in@gmail.com',
           subject: "FAILED $JOB_NAME Build No: $BUILD_NUMBER ",
-          body: "Build result:" + currentBuild.result + " took " + currentBuild.duration + " milliseconds."
-      }
-      success {
-          emailext to: "deerao.in@gmail.com",
+          body: 'Build result:' + currentBuild.result + ' took ' + currentBuild.duration + ' milliseconds.'
+        }
+        success {
+          emailext to: 'deerao.in@gmail.com',
           subject: "SUCCESS $JOB_NAME Build No: $BUILD_NUMBER ",
-          body: "Build result:" + currentBuild.result + " took " + currentBuild.duration + " milliseconds."
-      }        
+          body: 'Build result:' + currentBuild.result + ' took ' + currentBuild.duration + ' milliseconds.'
+        }
+      }
+    }
   }
 }
