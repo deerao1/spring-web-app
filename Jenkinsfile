@@ -10,7 +10,7 @@ pipeline {
     }
     stage('SonarQube Analysis') {
       steps {
-        withSonarQubeEnv(installationName: 'do-sonarqube') {
+        withSonarQubeEnv(installationName: 'sonarqube_server') {
             withMaven(maven:'maven386') {
                 sh 'mvn sonar:sonar'
             }
