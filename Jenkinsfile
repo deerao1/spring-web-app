@@ -51,7 +51,7 @@ pipeline {
         // sh "echo $NEXUS_USER / $NEXUS_CREDS_USR"
         // sh "echo $NEXUS_PASSWORD / $NEXUS_CREDS_PSW"
         withMaven(maven: 'maven386') {
-          sh 'mvn deploy'
+          sh 'mvn deploy:deploy'
         }
       }
     }
