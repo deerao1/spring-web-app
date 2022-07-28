@@ -10,7 +10,7 @@ pipeline {
       steps {
         withMaven(maven: 'maven386') {
           // sh 'mvn -s mvn-settings.xml clean install'
-          sh 'mvn clean deploy'
+          sh 'mvn -s mvn-settings.xml clean deploy'
         }
       }
     }
