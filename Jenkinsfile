@@ -17,7 +17,13 @@ pipeline {
     stage('deploy') {
       steps {
         withMaven(maven: 'maven386') {
-          sh 'mvn spring-boot:repackage'
+          options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
+                    ' -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar' +
+                    ' -Dfile=target/testing-web-complete-0.0.1-SNAPSHOT.jar ' +
+                    ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo/' +
+                    ' -DrepositoryId=nexus.repo'
+          sh "echo ${options}"
+          sh "mvn deploy:deploy-file ${options}"
         }
       }
     }
