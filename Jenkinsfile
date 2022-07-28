@@ -1,10 +1,15 @@
 pipeline {
   agent { node { label 'docker' } }
+  environment {
+    NEXUS_CREDS = credentials('nexus-devops-user')
+    NEXUS_USER = "$NEXUS_CREDS_USR"
+    NEXUS_PASSWORD = "$NEXUS_CREDS_PSW"
+  }
   stages {
     stage('build') {
       steps {
         withMaven(maven: 'maven386') {
-          sh 'mvn clean install'
+          sh 'mvn -s mvn-settings.xml clean install'
         }
       }
     }
@@ -19,7 +24,6 @@ pipeline {
     }
     stage('SonarQube Gate') {
       steps {
-        // sleep(60)
         timeout(time: 2, unit: 'MINUTES') {
           waitForQualityGate abortPipeline: true
         }
@@ -40,6 +44,12 @@ pipeline {
           subject: "SUCCESS $JOB_NAME Build No: $BUILD_NUMBER ",
           body: 'Build result:' + currentBuild.result + ' took ' + currentBuild.duration + ' milliseconds.'
         }
+      }
+    }
+    stage('Upload to Nexus') {
+      steps {
+        sh "echo $NEXUS_USER / $NEXUS_CREDS_USR"
+        sh "echo $NEXUS_PASSWORD / $NEXUS_CREDS_PSW"
       }
     }
   }
