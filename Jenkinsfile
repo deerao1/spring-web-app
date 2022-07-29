@@ -21,7 +21,7 @@ pipeline {
     }
     stage('deploy') {
       steps {
-        sh "echo $(pwd)"
+        sh "echo `pwd`"
         sh "echo mvn deploy:deploy-file ${options}"
         withMaven(maven: 'maven386') {
           sh "mvn deploy:deploy-file ${options}"
