@@ -1,7 +1,7 @@
 def options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
               ' -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar' +
               ' -Dfile=target/testing-web-complete-0.0.1-SNAPSHOT.jar ' +
-              ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo/' +
+              ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo' +
               ' -DrepositoryId=nexus.repo'
 pipeline {
   agent { node { label 'docker' } }
