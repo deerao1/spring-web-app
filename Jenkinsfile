@@ -1,3 +1,8 @@
+def options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
+              ' -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar' +
+              ' -Dfile=target/testing-web-complete-0.0.1-SNAPSHOT.jar ' +
+              ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo/' +
+              ' -DrepositoryId=nexus.repo'
 pipeline {
   agent { node { label 'docker' } }
   environment {
@@ -10,21 +15,17 @@ pipeline {
       steps {
         withMaven(maven: 'maven386') {
           // sh 'mvn -s mvn-settings.xml clean install'
-          sh 'mvn -s mvn-settings.xml clean install'
+          // sh 'mvn -s mvn-settings.xml clean install'
         }
       }
     }
     stage('deploy') {
       steps {
-        options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
-                    ' -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar' +
-                    ' -Dfile=target/testing-web-complete-0.0.1-SNAPSHOT.jar ' +
-                    ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo/' +
-                    ' -DrepositoryId=nexus.repo'
-        sh "echo ${options}"
-        withMaven(maven: 'maven386') {
-          sh "mvn deploy:deploy-file ${options}"
-        }
+
+        sh "echo mvn deploy:deploy-file ${options}"
+        // withMaven(maven: 'maven386') {
+        //   sh "mvn deploy:deploy-file ${options}"
+        // }
       }
     }
   // stage('SonarQube Analysis') {
