@@ -24,7 +24,7 @@ pipeline {
         sh "echo `pwd`"
         sh "echo mvn deploy:deploy-file ${options}"
         withMaven(maven: 'maven386') {
-          sh "mvn deploy:deploy-file ${options}"
+          sh "mvn -s mvn-settings.xml deploy:deploy-file ${options}"
         }
       }
     }
