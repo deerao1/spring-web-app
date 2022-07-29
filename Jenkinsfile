@@ -15,17 +15,16 @@ pipeline {
       steps {
         withMaven(maven: 'maven386') {
           // sh 'mvn -s mvn-settings.xml clean install'
-          // sh 'mvn -s mvn-settings.xml clean install'
+          sh 'mvn -s mvn-settings.xml clean install'
         }
       }
     }
     stage('deploy') {
       steps {
-
         sh "echo mvn deploy:deploy-file ${options}"
-        // withMaven(maven: 'maven386') {
-        //   sh "mvn deploy:deploy-file ${options}"
-        // }
+        withMaven(maven: 'maven386') {
+          sh "mvn deploy:deploy-file ${options}"
+        }
       }
     }
   // stage('SonarQube Analysis') {
