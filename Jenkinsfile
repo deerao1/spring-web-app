@@ -37,7 +37,9 @@ pipeline {
     stage('groovy test') {
       steps {
         script {
-          pomobj = new XmlParser().parse('pom.xml')
+          import groovy.xml.XmlParser
+          println "$WORKSPACE/pom.xml"
+          pomobj = new XmlParser().parse("$WORKSPACE/pom.xml")
           println pomobj.project.version
 
         }
