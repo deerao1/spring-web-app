@@ -34,7 +34,7 @@ pipeline {
     //     }
     //   }
     // }
-    state('groovy test') {
+    stage('groovy test') {
       steps {
         script {
           pomobj = new XmlParser().parse('pom.xml')
