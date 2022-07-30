@@ -7,30 +7,39 @@ pipeline {
     NEXUS_PASSWORD = "$NEXUS_CREDS_PSW"
   }
   stages {
-    stage('build') {
-      steps {
-        withMaven(maven: 'maven386') {
-          // sh 'mvn -s mvn-settings.xml clean install'
-          sh 'mvn -s mvn-settings.xml clean install'
-        }
-      }
-    }
-    stage('deploy') {
+    // stage('build') {
+    //   steps {
+    //     withMaven(maven: 'maven386') {
+    //       // sh 'mvn -s mvn-settings.xml clean install'
+    //       sh 'mvn -s mvn-settings.xml clean install'
+    //     }
+    //   }
+    // }
+    // stage('deploy') {
+    //   steps {
+    //     script {
+    //       pom = readMavenPom file: 'pom.xml'
+    //       println pom.version
+    //       options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
+    //           // " -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar" +
+    //           " -Dversion=${pom.version}-${BUILD_NUMBER} -Dpackaging=jar" +
+    //           " -Dfile=target/testing-web-complete-${pom.version}.jar " +
+    //           ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo' +
+    //           ' -DrepositoryId=nexus.repo'
+    //     }
+
+    //     sh "echo mvn deploy:deploy-file ${options}"
+    //     withMaven(maven: 'maven386') {
+    //       sh "mvn -s mvn-settings.xml deploy:deploy-file ${options}"
+    //     }
+    //   }
+    // }
+    state('groovy test') {
       steps {
         script {
-          pom = readMavenPom file: 'pom.xml'
-          println pom.version
-          options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
-              // " -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar" +
-              " -Dversion=${pom.version}-${BUILD_NUMBER} -Dpackaging=jar" +
-              " -Dfile=target/testing-web-complete-${pom.version}.jar " +
-              ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo' +
-              ' -DrepositoryId=nexus.repo'
-        }
+          pomobj = new XmlParser().parse('pom.xml')
+          println pomobj.project.version
 
-        sh "echo mvn deploy:deploy-file ${options}"
-        withMaven(maven: 'maven386') {
-          sh "mvn -s mvn-settings.xml deploy:deploy-file ${options}"
         }
       }
     }
