@@ -13,7 +13,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>testing-web-complete</artifactId>
 	<!-- <version>0.0.1-${env.BUILD_NUMBER}</version> -->
-	<version>0.0.1-${env.BUILD_NUMBER}</version>
+	<version>0.0.2</version>
 	<name>testing-web-complete</name>
 	<description>Demo project for Spring Boot</description>
 
