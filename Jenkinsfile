@@ -1,4 +1,4 @@
-version = sh script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true
+version = sh 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true
 println version
 options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
               // " -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar" +
