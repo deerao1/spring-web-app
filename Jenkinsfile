@@ -1,11 +1,4 @@
-pom = readMavenPom file: 'pom.xml'
-println pom.version
-options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
-              // " -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar" +
-              " -Dversion=${pom.version}-${BUILD_NUMBER} -Dpackaging=jar" +
-              " -Dfile=target/testing-web-complete-${pom.version}-${BUILD_NUMBER}.jar " +
-              ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo' +
-              ' -DrepositoryId=nexus.repo'
+
 pipeline {
   agent { node { label 'docker' } }
   environment {
@@ -24,7 +17,17 @@ pipeline {
     }
     stage('deploy') {
       steps {
-        sh "echo `pwd`"
+        script {
+          pom = readMavenPom file: 'pom.xml'
+          println pom.version
+          options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
+              // " -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar" +
+              " -Dversion=${pom.version}-${BUILD_NUMBER} -Dpackaging=jar" +
+              " -Dfile=target/testing-web-complete-${pom.version}-${BUILD_NUMBER}.jar " +
+              ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo' +
+              ' -DrepositoryId=nexus.repo'
+        }
+
         sh "echo mvn deploy:deploy-file ${options}"
         withMaven(maven: 'maven386') {
           sh "mvn -s mvn-settings.xml deploy:deploy-file ${options}"
