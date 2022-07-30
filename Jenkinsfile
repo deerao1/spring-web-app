@@ -1,7 +1,7 @@
 options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
               // " -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar" +
               " -Dversion=0.0.1-${BUILD_NUMBER} -Dpackaging=jar" +
-              ' -Dfile=target/testing-web-complete-0.0.1-SNAPSHOT.jar ' +
+              " -Dfile=target/testing-web-complete-0.0.1-${BUILD_NUMBER}.jar " +
               ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo' +
               ' -DrepositoryId=nexus.repo'
 pipeline {
