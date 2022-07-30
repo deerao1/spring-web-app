@@ -1,7 +1,9 @@
+version = sh script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true
+println version
 options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
               // " -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar" +
-              " -Dversion=${POM_VERSION}-${BUILD_NUMBER} -Dpackaging=jar" +
-              " -Dfile=target/testing-web-complete-${POM_VERSION}-${BUILD_NUMBER}.jar " +
+              " -Dversion=${version}-${BUILD_NUMBER} -Dpackaging=jar" +
+              " -Dfile=target/testing-web-complete-${version}-${BUILD_NUMBER}.jar " +
               ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo' +
               ' -DrepositoryId=nexus.repo'
 pipeline {
