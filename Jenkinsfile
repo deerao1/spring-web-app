@@ -36,6 +36,7 @@ pipeline {
     // }
     stage('groovy test') {
       steps {
+        sh "echo `id`"
         script {
           println "$WORKSPACE/pom.xml"
           pomobj = new XmlParser().parse("$WORKSPACE/pom.xml")
