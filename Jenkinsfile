@@ -14,7 +14,7 @@ pipeline {
         script {
           pom = readMavenPom file: 'pom.xml'
           tag = pom.version + '-' + env.BUILD_NUMBER
-          sh """"
+          sh """
             echo tag is ${tag}
             git config user.email = "ci-user@email.com"
             git config user.name = "Jenkins"
