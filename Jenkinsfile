@@ -11,7 +11,7 @@ pipeline {
       steps {
         script {
           pom = readMavenPom file: 'pom.xml'
-          tag = pom.version + '-' + ${BUILD_NUMBER}
+          tag = pom.version + '-' + $BUILD_NUMBER
           println tag
         }
         // sh "mvn -Dtag=<tag name> scm:tag "
