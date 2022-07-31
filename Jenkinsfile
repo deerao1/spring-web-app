@@ -15,7 +15,9 @@ pipeline {
           println tag
         }
         sh "echo ${tag}"
-        sh "mvn -Dtag=${tag} scm:tag "
+        withMaven(maven: 'maven386') {
+          sh "mvn -Dtag=${tag} scm:tag "
+        }
       }
     }
 
@@ -50,7 +52,7 @@ pipeline {
     //     withMaven(maven: 'maven386') {
     //       sh "mvn -s mvn-settings.xml deploy:deploy-file ${options}"
     //     }
-        
+
     //   }
     //   post {
     //     failure {
