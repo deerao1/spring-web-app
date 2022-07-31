@@ -5,6 +5,8 @@ pipeline {
     NEXUS_CREDS = credentials('nexus-devops-user')
     NEXUS_USER = "$NEXUS_CREDS_USR"
     NEXUS_PASSWORD = "$NEXUS_CREDS_PSW"
+
+
   }
   stages {
     stage('tag repo') {
@@ -12,11 +14,13 @@ pipeline {
         script {
           pom = readMavenPom file: 'pom.xml'
           tag = pom.version + '-' + env.BUILD_NUMBER
-          println tag
-        }
-        sh "echo ${tag}"
-        withMaven(maven: 'maven386') {
-          sh "mvn -Dtag=${tag} scm:tag "
+          sh """"
+            echo tag is ${tag}
+            git config user.email = "ci-user@email.com"
+            git config user.name = "Jenkins"
+            git tag -a ${tag}
+            git push origin ${tag}
+          """
         }
       }
     }
