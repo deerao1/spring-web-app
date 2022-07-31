@@ -7,46 +7,59 @@ pipeline {
     NEXUS_PASSWORD = "$NEXUS_CREDS_PSW"
   }
   stages {
-    stage('build') {
-      steps {
-        withMaven(maven: 'maven386') {
-          sh 'mvn -s mvn-settings.xml clean install'
-        }
-      }
-      post {
-        failure {
-          emailext to: 'deerao.in@gmail.com',
-          subject: "FAILED $JOB_NAME Build No: $BUILD_NUMBER, Stage build",
-          body: 'Build result:' + currentBuild.result + ' took ' + currentBuild.duration + ' milliseconds.'
-        }
-      }
-    }
-
-    stage('deploy') {
+    stage('tag repo') {
       steps {
         script {
-          pom = readMavenPom file: 'pom.xml' // requires 'Pipeline Utility Steps' plugin
-          println pom.version
-          options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
-              " -Dversion=${pom.version}-${BUILD_NUMBER} -Dpackaging=jar" +
-              " -Dfile=target/testing-web-complete-${pom.version}.jar " +
-              ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo' +
-              ' -DrepositoryId=nexus.repo'
+          pom = readMavenPom file: 'pom.xml'
+          tag = pom.version + '-' + $BUILD_NUMBER
+          println tag
         }
-
-        sh "echo mvn deploy:deploy-file ${options}"
-        withMaven(maven: 'maven386') {
-          sh "mvn -s mvn-settings.xml deploy:deploy-file ${options}"
-        }
-      }
-      post {
-        failure {
-          emailext to: 'deerao.in@gmail.com',
-          subject: "FAILED $JOB_NAME Build No: $BUILD_NUMBER, Stage deploy",
-          body: 'Build result:' + currentBuild.result + ' took ' + currentBuild.duration + ' milliseconds.'
-        }
+        // sh "mvn -Dtag=<tag name> scm:tag "
+        sh "echo $tag"
       }
     }
+
+    // stage('build') {
+    //   steps {
+    //     withMaven(maven: 'maven386') {
+    //       sh 'mvn -s mvn-settings.xml clean install'
+    //     }
+    //   }
+    //   post {
+    //     failure {
+    //       emailext to: 'deerao.in@gmail.com',
+    //       subject: "FAILED $JOB_NAME Build No: $BUILD_NUMBER, Stage build",
+    //       body: 'Build result:' + currentBuild.result + '. Check: ' + currentBuild.absoluteUrl
+    //     }
+    //   }
+    // }
+
+    // stage('deploy') {
+    //   steps {
+    //     script {
+    //       pom = readMavenPom file: 'pom.xml' // requires 'Pipeline Utility Steps' plugin
+    //       println pom.version
+    //       options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
+    //           " -Dversion=${pom.version}-${BUILD_NUMBER} -Dpackaging=jar" +
+    //           " -Dfile=target/testing-web-complete-${pom.version}.jar " +
+    //           ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo' +
+    //           ' -DrepositoryId=nexus.repo'
+    //     }
+
+    //     sh "echo mvn deploy:deploy-file ${options}"
+    //     withMaven(maven: 'maven386') {
+    //       sh "mvn -s mvn-settings.xml deploy:deploy-file ${options}"
+    //     }
+        
+    //   }
+    //   post {
+    //     failure {
+    //       emailext to: 'deerao.in@gmail.com',
+    //       subject: "FAILED $JOB_NAME Build No: $BUILD_NUMBER, Stage deploy",
+    //       body: 'Build result:' + currentBuild.result + '. Check: ' + currentBuild.absoluteUrl
+    //     }
+    //   }
+    // }
 
   // stage('SonarQube Analysis') {
   //   steps {
