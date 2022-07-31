@@ -14,8 +14,8 @@ pipeline {
           tag = pom.version + '-' + env.BUILD_NUMBER
           println tag
         }
-        // sh "mvn -Dtag=<tag name> scm:tag "
         sh "echo ${tag}"
+        sh "mvn -Dtag=${tag} scm:tag "
       }
     }
 
