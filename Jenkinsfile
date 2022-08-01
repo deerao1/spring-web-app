@@ -2,7 +2,9 @@
 pipeline {
   // agent { node { label 'docker' } }
   agent {
-    docker 'maven:3.8.6-openjdk-11'
+    docker {
+      image: 'maven:3.8.6-openjdk-11'
+      args: '-v /tmp:/tmp'
   }
   environment {
     NEXUS_CREDS = credentials('nexus-devops-user')
