@@ -1,12 +1,12 @@
 
 pipeline {
-  // agent { node { label 'docker' } }
-  agent {
-    docker {
-      image 'maven:3.8.6-openjdk-11'
-      args '-v /tmp:/root/.m2/repository'
-    }
-  }
+  agent { node { label 'docker' } }
+  // agent {
+  //   docker {
+  //     image 'maven:3.8.6-openjdk-11'
+  //     args '-v /tmp:/root/.m2/repository'
+  //   }
+  // }
   environment {
     NEXUS_CREDS = credentials('nexus-devops-user')
     NEXUS_USER = "$NEXUS_CREDS_USR"
@@ -31,6 +31,15 @@ pipeline {
       }
     }
 
+    stage('build docker image') {
+      steps {
+        script {
+          pom = readMavenPom file: 'pom.xml' // requires 'Pipeline Utility Steps' plugin
+          version = pom.version
+        }
+        sh 'docker build -t myrepo/myapp:$version --build-arg ver=$version .'
+      }
+    }
     // stage('SonarQube Analysis') {
     //   steps {
     //     withSonarQubeEnv(installationName: 'sonarqube_server') {
