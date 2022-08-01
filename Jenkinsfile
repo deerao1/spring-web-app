@@ -14,9 +14,9 @@ pipeline {
 
     GH_PAT = credentials('github-pat')
   }
-  // tools {
-  //   maven 'maven386'
-  // }
+  tools {
+    maven 'maven386'
+  }
   stages {
     stage('build') {
       steps {
