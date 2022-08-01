@@ -54,6 +54,9 @@ pipeline {
     }
 
     stage('deploy') {
+      options {
+        timeout(time: 1, unit: 'MINUTES')
+      }
       steps {
         script {
           pom = readMavenPom file: 'pom.xml' // requires 'Pipeline Utility Steps' plugin
