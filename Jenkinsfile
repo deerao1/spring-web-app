@@ -37,7 +37,7 @@ pipeline {
           pom = readMavenPom file: 'pom.xml' // requires 'Pipeline Utility Steps' plugin
           version = pom.version
         }
-        sh "docker build -t myrepo/myapp:${version} --build-arg ver=${version} .'
+        sh "docker build -t myrepo/myapp:${version} --build-arg ver=${version} ."
       }
     }
     // stage('SonarQube Analysis') {
