@@ -41,6 +41,19 @@ pipeline {
       }
     }
 
+    stage('push docker image to registry') {
+      steps {
+        script {
+          docker.withRegistry(
+            'https://059781990520.dkr.ecr.ap-south-1.amazonaws.com/',
+            'ecr:ap-south-1:spashta-aws-credentials') {
+              def myimage = docker.build('test_repo')
+              myimage.push('latest')
+            }
+        }
+      }
+    }
+
     // stage('SonarQube Analysis') {
     //   steps {
     //     withSonarQubeEnv(installationName: 'sonarqube_server') {
