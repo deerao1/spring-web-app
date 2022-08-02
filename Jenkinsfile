@@ -20,7 +20,7 @@ pipeline {
   stages {
     stage('build') {
       steps {
-          sh 'mvn -s mvn-settings.xml clean install'
+          sh 'mvn -s mvn-settings.xml clean install -Dmaven.test.skip=true'
       }
       post {
         failure {
@@ -31,17 +31,17 @@ pipeline {
       }
     }
 
-    stage('build docker image') {
-      steps {
-        script {
-          pom = readMavenPom file: 'pom.xml' // requires 'Pipeline Utility Steps' plugin
-          version = pom.version
-        }
-        sh "docker build -t myrepo/myapp:${version}-${BUILD_NUMBER} ."
-      }
-    }
+    // stage('build docker image') {
+    //   steps {
+    //     script {
+    //       pom = readMavenPom file: 'pom.xml' // requires 'Pipeline Utility Steps' plugin
+    //       version = pom.version
+    //     }
+    //     sh "docker build -t myrepo/myapp:${version}-${BUILD_NUMBER} ."
+    //   }
+    // }
 
-    stage('push docker image to registry') {
+    stage('build docker image and push to registry') {
       steps {
         script {
           docker.withRegistry(
