@@ -20,7 +20,7 @@ pipeline {
   stages {
     stage('build') {
       steps {
-          sh 'mvn -s mvn-settings.xml clean install -Dmaven.test.skip=true'
+          sh 'mvn -s mvn-settings.xml clean install -Dmaven.test.skip=true' // skip tests to save pipeline testing time
       }
       post {
         failure {
@@ -44,11 +44,14 @@ pipeline {
     stage('build docker image and push to registry') {
       steps {
         script {
+          pom = readMavenPom file: 'pom.xml'
+          version = pom.version
           docker.withRegistry(
             'https://059781990520.dkr.ecr.ap-south-1.amazonaws.com/',
             'ecr:ap-south-1:spashta-aws-credentials') {
               def myimage = docker.build('test_repo')
               myimage.push('latest')
+              myimage.push("${version}-${BUILD_NUMBER}")
             }
         }
       }
