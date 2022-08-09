@@ -31,6 +31,7 @@ pipeline {
       }
     }
 
+    // manual way of building image, without the plugin
     // stage('build docker image') {
     //   steps {
     //     script {
@@ -40,6 +41,62 @@ pipeline {
     //     sh "docker build -t myrepo/myapp:${version}-${BUILD_NUMBER} ."
     //   }
     // }
+
+
+
+    stage('SonarQube Analysis') {
+      steps {
+        withSonarQubeEnv(installationName: 'sonarqube_server') {
+          sh 'mvn sonar:sonar'
+        }
+      }
+    }
+
+    stage('SonarQube Gate') {
+      steps {
+        timeout(time: 2, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
+        }
+      }
+      post {
+        aborted {
+          emailext to: 'deerao.in@gmail.com',
+        subject: "ABORTED $JOB_NAME Build No: $BUILD_NUMBER ",
+        body: 'Build result:' + currentBuild.result + ' took ' + currentBuild.duration + ' milliseconds.'
+        }
+        failure {
+          emailext to: 'deerao.in@gmail.com',
+        subject: "FAILED $JOB_NAME Build No: $BUILD_NUMBER ",
+        body: 'Build result:' + currentBuild.result + ' took ' + currentBuild.duration + ' milliseconds.'
+        }
+      }
+    }
+
+    // stage('archive to nexus') {
+    //   options {
+    //     timeout(time: 1, unit: 'MINUTES')
+    //   }
+    //   steps {
+    //     script {
+    //       pom = readMavenPom file: 'pom.xml' // requires 'Pipeline Utility Steps' plugin
+    //       println pom.version
+    //       options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
+    //           " -Dversion=${pom.version}-${BUILD_NUMBER} -Dpackaging=jar" +
+    //           " -Dfile=target/testing-web-complete-${pom.version}.jar " +
+    //           ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo' +
+    //           ' -DrepositoryId=nexus.repo'
+    //     }
+    //     sh "mvn -s mvn-settings.xml deploy:deploy-file ${options}"
+    //   }
+    //   post {
+    //     failure {
+    //       emailext to: 'deerao.in@gmail.com',
+    //       subject: "FAILED $JOB_NAME Build No: $BUILD_NUMBER, Stage deploy",
+    //       body: 'Build result:' + currentBuild.result + '. Check: ' + currentBuild.absoluteUrl
+    //     }
+    //   }
+    // }
+
 
     stage('build docker image and push to registry') {
       steps {
@@ -56,60 +113,6 @@ pipeline {
         }
       }
     }
-
-    // stage('SonarQube Analysis') {
-    //   steps {
-    //     withSonarQubeEnv(installationName: 'sonarqube_server') {
-    //       sh 'mvn sonar:sonar'
-    //     }
-    //   }
-    // }
-
-    // stage('SonarQube Gate') {
-    //   steps {
-    //     timeout(time: 2, unit: 'MINUTES') {
-    //       waitForQualityGate abortPipeline: true
-    //     }
-    //   }
-    //   post {
-    //     aborted {
-    //       emailext to: 'deerao.in@gmail.com',
-    //     subject: "ABORTED $JOB_NAME Build No: $BUILD_NUMBER ",
-    //     body: 'Build result:' + currentBuild.result + ' took ' + currentBuild.duration + ' milliseconds.'
-    //     }
-    //     failure {
-    //       emailext to: 'deerao.in@gmail.com',
-    //     subject: "FAILED $JOB_NAME Build No: $BUILD_NUMBER ",
-    //     body: 'Build result:' + currentBuild.result + ' took ' + currentBuild.duration + ' milliseconds.'
-    //     }
-    //   }
-    // }
-
-    // stage('deploy') {
-    //   options {
-    //     timeout(time: 1, unit: 'MINUTES')
-    //   }
-    //   steps {
-    //     script {
-    //       pom = readMavenPom file: 'pom.xml' // requires 'Pipeline Utility Steps' plugin
-    //       println pom.version
-    //       options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
-    //           " -Dversion=${pom.version}-${BUILD_NUMBER} -Dpackaging=jar" +
-    //           " -Dfile=target/testing-web-complete-${pom.version}.jar " +
-    //           ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo' +
-    //           ' -DrepositoryId=nexus.repo'
-    //     }
-
-    //     sh "mvn -s mvn-settings.xml deploy:deploy-file ${options}"
-    //   }
-    //   post {
-    //     failure {
-    //       emailext to: 'deerao.in@gmail.com',
-    //       subject: "FAILED $JOB_NAME Build No: $BUILD_NUMBER, Stage deploy",
-    //       body: 'Build result:' + currentBuild.result + '. Check: ' + currentBuild.absoluteUrl
-    //     }
-    //   }
-    // }
 
   // stage('tag repo') {
   //   steps {
