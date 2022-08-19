@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: springboot-app-deployment
+  namespace: demo-namespace
   labels:
     app: springboot-app
 spec:
@@ -27,7 +28,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: health-check-service
+  name: springboot-app-service
+  namespace: demo-namespace
 spec:
   type: LoadBalancer
   ports:
