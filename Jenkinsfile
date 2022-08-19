@@ -44,7 +44,7 @@ pipeline {
 
     stage('SonarQube Analysis') {
       steps {
-        withSonarQubeEnv(installationName: 'sonarqube_trg') {
+        withSonarQubeEnv(installationName: 'sonarqube_server') {
           sh 'mvn sonar:sonar'
         }
       }
