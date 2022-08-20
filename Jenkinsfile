@@ -143,7 +143,7 @@ pipeline {
         kubectl create ns demo-namespace
         kubectl apply -f manifest.yml
         sleep 60
-        endpoint=$(kubectl get svc --namespace=demo-namespace | grep springboot | awk '{print $4}')
+        endpoint=`kubectl get svc --namespace=demo-namespace | grep springboot | awk '{print $4}' `
         curl --max-time 10 $endpoint
       """
       }
