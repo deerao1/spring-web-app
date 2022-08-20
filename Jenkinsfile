@@ -8,9 +8,11 @@ pipeline {
   //   }
   // }
   environment {
-    NEXUS_CREDS = credentials('nexus-devops-user')
+    NEXUS_CREDS = credentials('nexus-admin')
     NEXUS_USER = "$NEXUS_CREDS_USR"
     NEXUS_PASSWORD = "$NEXUS_CREDS_PSW"
+    NEXUS_IP = "165.22.210.250"
+    NEXUS_REPO = "maven2-training"
 
     GH_PAT = credentials('github-pat')
   }
@@ -42,58 +44,58 @@ pipeline {
     //   }
     // }
 
-    stage('SonarQube Analysis') {
-      steps {
-        withSonarQubeEnv(installationName: 'sonarqube_trg') {
-          sh 'mvn sonar:sonar'
-        }
-      }
-    }
-
-    stage('SonarQube Gate') {
-      steps {
-        timeout(time: 5, unit: 'MINUTES') {
-          waitForQualityGate abortPipeline: true
-        }
-      }
-      post {
-        aborted {
-          emailext to: 'deerao.in@gmail.com',
-        subject: "ABORTED $JOB_NAME Build No: $BUILD_NUMBER ",
-        body: 'Build result:' + currentBuild.result + ' took ' + currentBuild.duration + ' milliseconds.'
-        }
-        failure {
-          emailext to: 'deerao.in@gmail.com',
-        subject: "FAILED $JOB_NAME Build No: $BUILD_NUMBER ",
-        body: 'Build result:' + currentBuild.result + ' took ' + currentBuild.duration + ' milliseconds.'
-        }
-      }
-    }
-
-    // stage('archive to nexus') {
-    //   options {
-    //     timeout(time: 1, unit: 'MINUTES')
-    //   }
+    // stage('SonarQube Analysis') {
     //   steps {
-    //     script {
-    //       pom = readMavenPom file: 'pom.xml' // requires 'Pipeline Utility Steps' plugin
-    //       println pom.version
-    //       options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
-    //           " -Dversion=${pom.version}-${BUILD_NUMBER} -Dpackaging=jar" +
-    //           " -Dfile=target/testing-web-complete-${pom.version}.jar " +
-    //           ' -Durl=http://139.59.53.53:8081/repository/demo-maven2-repo' +
-    //           ' -DrepositoryId=nexus.repo'
-    //     }
-    //     sh "mvn -s mvn-settings.xml deploy:deploy-file ${options}"
-    //   }
-    //   post {
-    //     failure {
-    //       emailext to: 'deerao.in@gmail.com',
-    //       subject: "FAILED $JOB_NAME Build No: $BUILD_NUMBER, Stage deploy",
-    //       body: 'Build result:' + currentBuild.result + '. Check: ' + currentBuild.absoluteUrl
+    //     withSonarQubeEnv(installationName: 'sonarqube_trg') {
+    //       sh 'mvn sonar:sonar'
     //     }
     //   }
     // }
+
+    // stage('SonarQube Gate') {
+    //   steps {
+    //     timeout(time: 2, unit: 'MINUTES') {
+    //       waitForQualityGate abortPipeline: true
+    //     }
+    //   }
+    //   post {
+    //     aborted {
+    //       emailext to: 'deerao.in@gmail.com',
+    //     subject: "ABORTED $JOB_NAME Build No: $BUILD_NUMBER ",
+    //     body: 'Build result:' + currentBuild.result + ' took ' + currentBuild.duration + ' milliseconds.'
+    //     }
+    //     failure {
+    //       emailext to: 'deerao.in@gmail.com',
+    //     subject: "FAILED $JOB_NAME Build No: $BUILD_NUMBER ",
+    //     body: 'Build result:' + currentBuild.result + ' took ' + currentBuild.duration + ' milliseconds.'
+    //     }
+    //   }
+    // }
+
+    stage('archive to nexus') {
+      options {
+        timeout(time: 1, unit: 'MINUTES')
+      }
+      steps {
+        script {
+          pom = readMavenPom file: 'pom.xml' // requires 'Pipeline Utility Steps' plugin
+          println pom.version
+          options = ' -DgroupId=com.example -DartifactId=testing-web-complete' +
+              " -Dversion=${pom.version}-${BUILD_NUMBER} -Dpackaging=jar" +
+              " -Dfile=target/testing-web-complete-${pom.version}.jar " +
+              " -Durl=http://${NEXUS_IP}:8081/repository/${NEXUS_REPO}" +
+              ' -DrepositoryId=nexus.repo'
+        }
+        sh "mvn -s mvn-settings.xml deploy:deploy-file ${options}"
+      }
+      post {
+        failure {
+          emailext to: 'deerao.in@gmail.com',
+          subject: "FAILED $JOB_NAME Build No: $BUILD_NUMBER, Stage deploy",
+          body: 'Build result:' + currentBuild.result + '. Check: ' + currentBuild.absoluteUrl
+        }
+      }
+    }
 
     // stage('build docker image and push to registry') {
     //   steps {
