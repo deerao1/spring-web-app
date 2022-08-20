@@ -15,6 +15,9 @@ pipeline {
     NEXUS_REPO = "maven2-training"
 
     GH_PAT = credentials('github-pat')
+
+    AWS_REGION = "us-east-2"
+    K8_CLUSTER_NAME = "eks-devops-trg"
   }
   tools {
     maven 'maven386'
@@ -100,6 +103,7 @@ pipeline {
     stage('build docker image and push to registry') {
       steps {
         script {
+          // code insdie script tag is groovy
           pom = readMavenPom file: 'pom.xml'
           version = pom.version
           docker.withRegistry(
@@ -116,6 +120,7 @@ pipeline {
     stage('tag repo') {
       steps {
         script {
+          // code insdie script tag is groovy
           pom = readMavenPom file: 'pom.xml'
           tag = pom.version + '-' + env.BUILD_NUMBER
           sh """
@@ -131,13 +136,16 @@ pipeline {
     stage('deploy to kubernetes') {
       agent { node { label 'k8' } }
       steps {
-        sh '''
+        sh """
+        rm -f /root/.kube/config
+        # configure kubectl to access eks
+        aws eks update-kubeconfig --region $AWS_REGION  --name $K8_CLUSTER_NAME
         kubectl create ns demo-namespace
         kubectl apply -f manifest.yml
         sleep 60
-        endpoint=$(kubectl get svc | grep health | awk '{print $4}')
-        curl --max-time $endpoint
-      '''
+        endpoint=$(kubectl get svc --namespace=demo-namespace | grep springboot | awk '{print $4}')
+        curl --max-time 10 $endpoint
+      """
       }
     }
 
