@@ -133,20 +133,20 @@ pipeline {
       }
     }
 
-    // stage('deploy to kubernetes') {
-    //   agent { node { label 'k8' } }
-    //   steps {
-    //     sh """
-    //     rm -f /root/.kube/config
-    //     # configure kubectl to access eks
-    //     aws eks update-kubeconfig --region $AWS_REGION  --name $K8_CLUSTER_NAME
-    //     kubectl create ns demo-namespace
-    //     kubectl apply -f manifest.yml
-    //     sleep 60
-    //     kubectl get svc --namespace=demo-namespace | grep springboot | awk '{print \$4}' 
-    //   """
-    //   }
-    // }
+    stage('deploy to kubernetes') {
+      agent { node { label 'k8' } }
+      steps {
+        sh """
+        rm -f /root/.kube/config
+        # configure kubectl to access eks
+        aws eks update-kubeconfig --region $AWS_REGION  --name $K8_CLUSTER_NAME
+        kubectl create ns demo-namespace
+        kubectl apply -f manifest.yml
+        sleep 60
+        kubectl get svc --namespace=demo-namespace | grep springboot | awk '{print \$4}' 
+      """
+      }
+    }
 
   }
     post {
