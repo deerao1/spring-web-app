@@ -11,7 +11,7 @@ pipeline {
     NEXUS_CREDS = credentials('nexus-admin')
     NEXUS_USER = "$NEXUS_CREDS_USR"
     NEXUS_PASSWORD = "$NEXUS_CREDS_PSW"
-    NEXUS_IP = "165.22.210.250"
+    NEXUS_IP = "165.232.178.232"
     NEXUS_REPO = "maven2-training"
 
     GH_PAT = credentials('github-pat')
